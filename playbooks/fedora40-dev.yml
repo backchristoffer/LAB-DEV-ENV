@@ -1,0 +1,79 @@
+# ansible-playbook -i "hostip," --user=user --ask-become-password fedora40-dev.yml 
+- name: Setup development environment on Fedora 40
+  hosts: all
+  become: yes
+  tasks: 
+
+    - name: Check connection to workstation
+      ping: 
+      register: ping_re
+      ignore_errors: yes
+
+    - name: Fail if no connection
+      fail:
+        msg: "No connection to workstation."
+      when: ping_re.failed
+
+    - name: Update system
+      dnf:
+        name: '*'
+        state: latest
+      when: not ping_re.failed 
+    
+    - name: Logging for ping success
+      debug: 
+        msg: "Ping successful. Workstation can be reached. Proceeding with installation"
+      when: not ping_re.failed 
+
+    - name: Install packages for development
+      dnf: 
+        name: "{{ item  }}"
+        state: present
+      loop:
+        - git
+        - vim
+        - python3
+        - python3-pip
+        - podman
+        - wget
+        - gcc
+        - gcc-c++
+        - gdb
+        - make
+        - cmake
+        - golang
+        - valgrind
+        - curl-devel
+        - libcurl-devel
+        - openssl-devel
+        - zlib-devel
+        - ncurses-devel
+        - readline-devel
+        - sqlite-devel
+        - gettext
+        - libtool
+        - autoconf
+        - automake
+        - libstdc++-devel
+        - pkg-config
+      when: not ping_re.failed 
+
+    - name: Import Microsoft GPG key
+      command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
+      when: not ping_re.failed
+      
+    - name: Add VSCode repository
+      shell: echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
+      when: not ping_re.failed
+
+
+    - name: Install Visual Studio Code
+      dnf:
+        name: code
+        state: present
+      when: not ping_re.failed
+
+    - name: Log installation
+      debug: 
+        msg: "Installation successful"
+      when: not ping_re.failed
