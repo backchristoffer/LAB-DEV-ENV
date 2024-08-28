@@ -1,0 +1,38 @@
+- name: Setup web server 
+  hosts: all
+  become: yes
+  tasks: 
+
+    - name: Check connection to host
+      ping: 
+      register: ping_re
+      ignore_errors: yes
+
+    - name: Fail if no connection
+      fail:
+        msg: "No connection to host"
+      when: ping_re.failed
+
+    - name: Update system
+      dnf:
+        name: '*'
+        state: latest
+      when: not ping_re.failed 
+
+    - name: Logging for ping success
+      debug: 
+        msg: "Ping successful. Host can be reached. Proceeding with installation"
+      when: not ping_re.failed 
+
+    - name: Install packages for web server
+      dnf: 
+        name: "{{ item  }}"
+        state: present
+      loop:
+        - nginx
+      when: not ping_re.failed
+
+    - name: Log installation
+      debug: 
+        msg: "Installation successful"
+      when: not ping_re.failed
