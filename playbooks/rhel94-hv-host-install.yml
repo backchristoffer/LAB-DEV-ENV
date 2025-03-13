@@ -1,4 +1,9 @@
 # ansible-playbook -i "hostip," --user=user --ask-become-password playbook 
+# Using documentation 
+# https://docs.ansible.com/ansible/latest/collections/community/libvirt/index.html 
+# https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_virtualization/introducing-virtualization-in-rhel_configuring-and-managing-virtualization
+
+
 - name: Setup the main lab environment - hypervisor
   hosts: all
   become: yes
@@ -79,6 +84,132 @@
     - name: KVM VZ Results
       ansible.builtin.debug:
         msg: "{{ validation_output.stdout_lines }}"
+
+    - name: Create systemuser ocpsa for Openshift labs
+      ansible.builtin.user: 
+        name: ocpsa
+        create_home: yes
+        state: present
+        system: true
+  
+    - name: Create systemuser rhelsa for RHEL labs
+      ansible.builtin.user: 
+        name: rhelsa
+        create_home: yes
+        state: present
+        system: true
+
+    - name: Define the OpenShift storage pool
+      community.libvirt.virt_pool:
+        command: define
+        name: ocp-pool-1
+        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+      vars:
+        pool_name: ocp-pool-1
+        pool_path: /home/ocpsa/ocp-pool-1
+  
+    - name: Build the Openshift storage pool 
+      community.libvirt.virt_pool:
+        command: build
+        name: ocp-pool-1
+      ignore_errors: yes
+
+    - name: Start the Openshift storage pool
+      community.libvirt.virt_pool:
+        command: create
+        name: ocp-pool-1
+      ignore_errors: yes
+
+    - name: Ensure that the openshift pool is active.
+      community.libvirt.virt_pool:
+        state: active
+        name: ocp-pool-1
+    
+    - name: Openshift pool should autostart
+      community.libvirt.virt_pool:
+         autostart: true
+         name: ocp-pool-1
+
+    - name: Define the OpenShift network pool
+      community.libvirt.virt_net:
+        command: define
+        name: "{{ pool_name }}"
+        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+      vars:
+        pool_name: ocp-netpool-1
+        bridge_name: br0
+        ip_address: 192.168.10.20
+        range_start: 192.168.10.20
+        range_end: 192.168.10.200
+
+    - name: Start the Openshift network pool
+      community.libvirt.virt_net:
+        command: create
+        name: ocp-netpool-1
+
+    - name: Activate the Openshift network pool
+      community.libvirt.virt_net:
+        state: active
+        name: ocp-netpool-1
+    
+    - name: Autostart the Openshift network pool
+      community.libvirt.virt_net:
+        autostart: true
+        name: ocp-netpool-1
+  
+    - name: Define the RHEL LAB network pool
+      community.libvirt.virt_net:
+        command: define
+        name: "{{ pool_name }}"
+        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+      vars:
+        pool_name: rhel-netpool-1
+        bridge_name: br1
+        ip_address: 192.168.11.20
+        range_start: 192.168.11.20
+        range_end: 192.168.11.200
+
+    - name: Start the RHEL LAB network pool
+      community.libvirt.virt_net:
+        command: create
+        name: rhel-netpool-1
+
+    - name: Activate the RHEL LAB network pool
+      community.libvirt.virt_net:
+        state: active
+        name: rhel-netpool-1
+    
+    - name: Autostart the RHEL LAB network pool
+      community.libvirt.virt_net:
+        autostart: true
+        name: rhel-netpool-1
+
+    - name: Define the RHEL DEV network pool
+      community.libvirt.virt_net:
+        command: define
+        name: "{{ pool_name }}"
+        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+      vars:
+        pool_name: rhel-netpool-2
+        bridge_name: br2
+        ip_address: 192.168.12.20
+        range_start: 192.168.12.20
+        range_end: 192.168.12.200
+
+    - name: Start the RHEL DEV network pool
+      community.libvirt.virt_net:
+        command: create
+        name: rhel-netpool-2
+
+    - name: Activate the RHEL DEV network pool
+      community.libvirt.virt_net:
+        state: active
+        name: rhel-netpool-2
+    
+    - name: Autostart the RHEL DEV network pool
+      community.libvirt.virt_net:
+        autostart: true
+        name: rhel-netpool-2
 
     - name: Log installation
       debug: 
