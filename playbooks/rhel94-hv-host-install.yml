@@ -9,7 +9,7 @@
   become: yes
   tasks: 
 
-    - name: Check connection to workstation
+    - name: Check connection to server
       ping: 
       register: ping_re
       ignore_errors: yes
@@ -19,197 +19,248 @@
         msg: "No connection to workstation."
       when: ping_re.failed
 
-    - name: Update system
-      dnf:
-        name: '*'
+    # - name: Update system
+    #   dnf:
+    #     name: '*'
+    #     state: latest
+    #   when: not ping_re.failed 
+    
+    # - name: Logging for ping success
+    #   debug: 
+    #     msg: "Ping successful. RHEL94 server can be reached. Proceeding with installation"
+    #   when: not ping_re.failed 
+
+    # - name: Install packages for development
+    #   dnf: 
+    #     name: "{{ item  }}"
+    #     state: present
+    #   loop:
+    #     - bash-completion
+    #     - git
+    #     - vim
+    #     - python3
+    #     - python3-pip
+    #     - podman
+    #     - wget
+    #     - qemu-kvm
+    #     - libvirt
+    #     - virt-install
+    #     - virt-viewer
+    #   when: not ping_re.failed 
+
+    # - name: Enable virtualization services
+    #   ansible.builtin.service:
+    #     name: "virt{{ item[0] }}d{{ item[1] | default('') }}.socket"
+    #     state: started
+    #     enabled: yes
+    #   loop:
+    #     - [ "qemu", "" ]
+    #     - [ "qemu", "-ro" ]
+    #     - [ "qemu", "-admin" ]
+    #     - [ "network", "" ]
+    #     - [ "network", "-ro" ]
+    #     - [ "network", "-admin" ]
+    #     - [ "nodedev", "" ]
+    #     - [ "nodedev", "-ro" ]
+    #     - [ "nodedev", "-admin" ]
+    #     - [ "nwfilter", "" ]
+    #     - [ "nwfilter", "-ro" ]
+    #     - [ "nwfilter", "-admin" ]
+    #     - [ "secret", "" ]
+    #     - [ "secret", "-ro" ]
+    #     - [ "secret", "-admin" ]
+    #     - [ "storage", "" ]
+    #     - [ "storage", "-ro" ]
+    #     - [ "storage", "-admin" ]
+    #     - [ "interface", "" ]
+    #     - [ "interface", "-ro" ]
+    #     - [ "interface", "-admin" ]
+
+    # - name: Validate virtualization 
+    #   ansible.builtin.command: virt-host-validate
+    #   register: validation_output
+    #   changed_when: false
+
+    # - name: KVM VZ Results
+    #   ansible.builtin.debug:
+    #     msg: "{{ validation_output.stdout_lines }}"
+
+    # - name: Create systemuser ocpsa for Openshift labs
+    #   ansible.builtin.user: 
+    #     name: ocpsa
+    #     create_home: yes
+    #     state: present
+    #     system: true
+  
+    # - name: Create systemuser rhelsa for RHEL labs
+    #   ansible.builtin.user: 
+    #     name: rhelsa
+    #     create_home: yes
+    #     state: present
+    #     system: true
+
+    # - name: Define the OpenShift storage pool
+    #   community.libvirt.virt_pool:
+    #     command: define
+    #     name: ocp-pool-1
+    #     xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+    #   vars:
+    #     pool_name: ocp-pool-1
+    #     pool_path: /home/ocpsa/ocp-pool-1
+  
+    # - name: Build the Openshift storage pool 
+    #   community.libvirt.virt_pool:
+    #     command: build
+    #     name: ocp-pool-1
+    #   ignore_errors: yes
+
+    # - name: Start the Openshift storage pool
+    #   community.libvirt.virt_pool:
+    #     command: create
+    #     name: ocp-pool-1
+    #   ignore_errors: yes
+
+    # - name: Ensure that the openshift pool is active.
+    #   community.libvirt.virt_pool:
+    #     state: active
+    #     name: ocp-pool-1
+    
+    # - name: Openshift pool should autostart
+    #   community.libvirt.virt_pool:
+    #      autostart: true
+    #      name: ocp-pool-1
+  
+    # - name: Define the RHEL LAB storage pool
+    #   community.libvirt.virt_pool:
+    #     command: define
+    #     name: rhel-lab-pool-1
+    #     xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+    #   vars:
+    #     pool_name: rhel-lab-pool-1
+    #     pool_path: /home/rhelsa/rhel-lab-pool-1
+  
+    # - name: Build the RHEL LAB storage pool 
+    #   community.libvirt.virt_pool:
+    #     command: build
+    #     name: rhel-lab-pool-1
+    #   ignore_errors: yes
+
+    # - name: Start the RHEL LAB storage pool
+    #   community.libvirt.virt_pool:
+    #     command: create
+    #     name: rhel-lab-pool-1
+    #   ignore_errors: yes
+
+    # - name: Ensure that the RHEL LAB pool is active.
+    #   community.libvirt.virt_pool:
+    #     state: active
+    #     name: rhel-lab-pool-1
+    
+    # - name: RHEL LAB pool should autostart
+    #   community.libvirt.virt_pool:
+    #      autostart: true
+    #      name: rhel-lab-pool-1
+
+    # - name: Define the OpenShift network pool
+    #   community.libvirt.virt_net:
+    #     command: define
+    #     name: "{{ pool_name }}"
+    #     xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+    #   vars:
+    #     pool_name: ocp-netpool-1
+    #     bridge_name: br0
+    #     ip_address: 192.168.10.20
+    #     range_start: 192.168.10.20
+    #     range_end: 192.168.10.200
+
+    # - name: Start the Openshift network pool
+    #   community.libvirt.virt_net:
+    #     command: create
+    #     name: ocp-netpool-1
+
+    # - name: Activate the Openshift network pool
+    #   community.libvirt.virt_net:
+    #     state: active
+    #     name: ocp-netpool-1
+    
+    # - name: Autostart the Openshift network pool
+    #   community.libvirt.virt_net:
+    #     autostart: true
+    #     name: ocp-netpool-1
+  
+    # - name: Define the RHEL LAB network pool
+    #   community.libvirt.virt_net:
+    #     command: define
+    #     name: "{{ pool_name }}"
+    #     xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+    #   vars:
+    #     pool_name: rhel-netpool-1
+    #     bridge_name: br1
+    #     ip_address: 192.168.11.20
+    #     range_start: 192.168.11.20
+    #     range_end: 192.168.11.200
+
+    # - name: Start the RHEL LAB network pool
+    #   community.libvirt.virt_net:
+    #     command: create
+    #     name: rhel-netpool-1
+
+    # - name: Activate the RHEL LAB network pool
+    #   community.libvirt.virt_net:
+    #     state: active
+    #     name: rhel-netpool-1
+    
+    # - name: Autostart the RHEL LAB network pool
+    #   community.libvirt.virt_net:
+    #     autostart: true
+    #     name: rhel-netpool-1
+
+    # - name: Define the RHEL DEV network pool
+    #   community.libvirt.virt_net:
+    #     command: define
+    #     name: "{{ pool_name }}"
+    #     xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+    #   vars:
+    #     pool_name: rhel-netpool-2
+    #     bridge_name: br2
+    #     ip_address: 192.168.12.20
+    #     range_start: 192.168.12.20
+    #     range_end: 192.168.12.200
+
+    # - name: Start the RHEL DEV network pool
+    #   community.libvirt.virt_net:
+    #     command: create
+    #     name: rhel-netpool-2
+
+    # - name: Activate the RHEL DEV network pool
+    #   community.libvirt.virt_net:
+    #     state: active
+    #     name: rhel-netpool-2
+    
+    # - name: Autostart the RHEL DEV network pool
+    #   community.libvirt.virt_net:
+    #     autostart: true
+    #     name: rhel-netpool-2
+
+    - name: Install RHEL image builder
+      ansible.builtin.dnf:
+        name:
+          - osbuild-composer
+          - composer-cli
+          - cockpit-composer
         state: latest
-      when: not ping_re.failed 
-    
-    - name: Logging for ping success
-      debug: 
-        msg: "Ping successful. RHEL94 server can be reached. Proceeding with installation"
-      when: not ping_re.failed 
 
-    - name: Install packages for development
-      dnf: 
-        name: "{{ item  }}"
-        state: present
-      loop:
-        - bash-completion
-        - git
-        - vim
-        - python3
-        - python3-pip
-        - podman
-        - wget
-        - qemu-kvm
-        - libvirt
-        - virt-install
-        - virt-viewer
-      when: not ping_re.failed 
-
-    - name: Enable virtualization services
+    - name: enable osbuild-composer
       ansible.builtin.service:
-        name: "virt{{ item[0] }}d{{ item[1] | default('') }}.socket"
-        state: started
+        name: osbuild-composer
         enabled: yes
-      loop:
-        - [ "qemu", "" ]
-        - [ "qemu", "-ro" ]
-        - [ "qemu", "-admin" ]
-        - [ "network", "" ]
-        - [ "network", "-ro" ]
-        - [ "network", "-admin" ]
-        - [ "nodedev", "" ]
-        - [ "nodedev", "-ro" ]
-        - [ "nodedev", "-admin" ]
-        - [ "nwfilter", "" ]
-        - [ "nwfilter", "-ro" ]
-        - [ "nwfilter", "-admin" ]
-        - [ "secret", "" ]
-        - [ "secret", "-ro" ]
-        - [ "secret", "-admin" ]
-        - [ "storage", "" ]
-        - [ "storage", "-ro" ]
-        - [ "storage", "-admin" ]
-        - [ "interface", "" ]
-        - [ "interface", "-ro" ]
-        - [ "interface", "-admin" ]
+        state: started
 
-    - name: Validate virtualization 
-      ansible.builtin.command: virt-host-validate
-      register: validation_output
-      changed_when: false
-
-    - name: KVM VZ Results
-      ansible.builtin.debug:
-        msg: "{{ validation_output.stdout_lines }}"
-
-    - name: Create systemuser ocpsa for Openshift labs
-      ansible.builtin.user: 
-        name: ocpsa
-        create_home: yes
-        state: present
-        system: true
-  
-    - name: Create systemuser rhelsa for RHEL labs
-      ansible.builtin.user: 
-        name: rhelsa
-        create_home: yes
-        state: present
-        system: true
-
-    - name: Define the OpenShift storage pool
-      community.libvirt.virt_pool:
-        command: define
-        name: ocp-pool-1
-        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
-      vars:
-        pool_name: ocp-pool-1
-        pool_path: /home/ocpsa/ocp-pool-1
-  
-    - name: Build the Openshift storage pool 
-      community.libvirt.virt_pool:
-        command: build
-        name: ocp-pool-1
-      ignore_errors: yes
-
-    - name: Start the Openshift storage pool
-      community.libvirt.virt_pool:
-        command: create
-        name: ocp-pool-1
-      ignore_errors: yes
-
-    - name: Ensure that the openshift pool is active.
-      community.libvirt.virt_pool:
-        state: active
-        name: ocp-pool-1
-    
-    - name: Openshift pool should autostart
-      community.libvirt.virt_pool:
-         autostart: true
-         name: ocp-pool-1
-
-    - name: Define the OpenShift network pool
-      community.libvirt.virt_net:
-        command: define
-        name: "{{ pool_name }}"
-        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
-      vars:
-        pool_name: ocp-netpool-1
-        bridge_name: br0
-        ip_address: 192.168.10.20
-        range_start: 192.168.10.20
-        range_end: 192.168.10.200
-
-    - name: Start the Openshift network pool
-      community.libvirt.virt_net:
-        command: create
-        name: ocp-netpool-1
-
-    - name: Activate the Openshift network pool
-      community.libvirt.virt_net:
-        state: active
-        name: ocp-netpool-1
-    
-    - name: Autostart the Openshift network pool
-      community.libvirt.virt_net:
-        autostart: true
-        name: ocp-netpool-1
-  
-    - name: Define the RHEL LAB network pool
-      community.libvirt.virt_net:
-        command: define
-        name: "{{ pool_name }}"
-        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
-      vars:
-        pool_name: rhel-netpool-1
-        bridge_name: br1
-        ip_address: 192.168.11.20
-        range_start: 192.168.11.20
-        range_end: 192.168.11.200
-
-    - name: Start the RHEL LAB network pool
-      community.libvirt.virt_net:
-        command: create
-        name: rhel-netpool-1
-
-    - name: Activate the RHEL LAB network pool
-      community.libvirt.virt_net:
-        state: active
-        name: rhel-netpool-1
-    
-    - name: Autostart the RHEL LAB network pool
-      community.libvirt.virt_net:
-        autostart: true
-        name: rhel-netpool-1
-
-    - name: Define the RHEL DEV network pool
-      community.libvirt.virt_net:
-        command: define
-        name: "{{ pool_name }}"
-        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
-      vars:
-        pool_name: rhel-netpool-2
-        bridge_name: br2
-        ip_address: 192.168.12.20
-        range_start: 192.168.12.20
-        range_end: 192.168.12.200
-
-    - name: Start the RHEL DEV network pool
-      community.libvirt.virt_net:
-        command: create
-        name: rhel-netpool-2
-
-    - name: Activate the RHEL DEV network pool
-      community.libvirt.virt_net:
-        state: active
-        name: rhel-netpool-2
-    
-    - name: Autostart the RHEL DEV network pool
-      community.libvirt.virt_net:
-        autostart: true
-        name: rhel-netpool-2
+    - name: enable cockpit-composer
+      ansible.builtin.service:
+        name: cockpit.socket
+        enabled: yes
+        state: started
 
     - name: Log installation
       debug: 
