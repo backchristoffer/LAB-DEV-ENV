@@ -3,36 +3,48 @@
   <memory unit='GiB'>{{ memory_gb }}</memory>
   <vcpu placement='static'>{{ cpu_number }}</vcpu>
   <os>
+    <!-- Updated machine type to q35 -->
     <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
     <boot dev='cdrom'/>
   </os>
   <devices>
+    <!-- Updated PCI controller to pcie-root for index 0 -->
     <controller type='pci' index='0' model='pcie-root'/>
+    
+    <!-- Virtual Disk -->
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source pool='{{ storagepool_name }}' file='/home/rhelsa/{{ storagepool_name }}/{{ vm_name }}-vm.qcow2'/>
       <target dev='vda' bus='virtio'/>
     </disk>
+
+    <!-- Network Interface -->
     <interface type='network'>
       <mac address='52:54:00:5f:3e:1d'/>
       <source network='{{ netpool_name }}'/>
       <model type='virtio'/>
     </interface>
+
+    <!-- CD-ROM (ISO) -->
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source file='{{ iso_path }}'/>
       <target dev='sda' bus='sata'/>
     </disk>
+
+    <!-- Serial Console -->
     <serial type='pty'>
-    <source path='/dev/pts/2'/>
-    <target type='isa-serial' port='0'>
+      <source path='/dev/pts/2'/>
+      <target type='isa-serial' port='0'>
         <model name='isa-serial'/>
-    </target>
+      </target>
     </serial>
+
+    <!-- Console -->
     <console type='pty'>
-    <source path='/dev/pts/2'/>
-    <target type='serial'/>
+      <source path='/dev/pts/2'/>
+      <target type='serial'/>
     </console>
   </devices>
 </domain>

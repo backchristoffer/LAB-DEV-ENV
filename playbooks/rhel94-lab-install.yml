@@ -10,8 +10,9 @@
     storagepool_name: "rhel-lab-pool-1"
     netpool_name: "rhel-netpool-1"
     iso_path: "/home/rhelsa/images/rhel94-lab.qcow2"
+    disk_image_path: "/home/rhelsa/{{ storagepool_name }}/{{ vm_name }}-vm.qcow2"
 
-  tasks: 
+  tasks:
     - name: Check connection to server
       ping: 
       register: ping_re
@@ -25,9 +26,27 @@
     - name: Logging for ping success
       debug: 
         msg: "Ping successful. RHEL94 server can be reached. Proceeding with installation"
-      when: not ping_re.failed 
+      when: not ping_re.failed
 
-    - name: Define the RHEL LAB vm
+    - name: Check if storage pool exists
+      command: virsh pool-list --all
+      register: pool_list
+      failed_when: false
+
+    - name: Create storage pool if it doesn't exist
+      command: virsh pool-create-as --name "{{ storagepool_name }}" --type dir --target "/home/rhelsa/{{ storagepool_name }}"
+      when: "'{{ storagepool_name }}' not in pool_list.stdout"
+
+    - name: Check if disk image exists
+      stat:
+        path: "{{ disk_image_path }}"
+      register: img_stat
+
+    - name: Create disk image if it does not exist
+      command: qemu-img create -f qcow2 "{{ disk_image_path }}" 40G
+      when: img_stat.stat.exists == false
+
+    - name: Define the RHEL LAB VM
       community.libvirt.virt:
         name: "{{ vm_name }}"
         xml: "{{ lookup('template', '../templates/template-rhel-94.xml.j2') }}"
