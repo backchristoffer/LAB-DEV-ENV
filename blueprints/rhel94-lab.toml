@@ -67,5 +67,3 @@ size = 21474836480
 
 [files]
 kickstart_file = "ks.cfg"
-cloud_init_user_data = "user-data"
-cloud_init_cfg = "cloud.cfg"
