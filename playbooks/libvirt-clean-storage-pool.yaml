@@ -1,0 +1,33 @@
+---
+- name: Clean RHEL LAB storage pool with libvirt
+  hosts: all
+  become: yes
+  vars:
+    pool_name: rhel-lab-pool-1
+    pool_path: /home/rhelsa/rhel-lab-pool-1
+
+  tasks:
+    - name: Stop the RHEL LAB storage pool
+      community.libvirt.virt_pool:
+        command: destroy
+        name: "{{ pool_name }}"
+      ignore_errors: yes
+
+    - name: Undefine the RHEL LAB storage pool
+      community.libvirt.virt_pool:
+        command: undefine
+        name: "{{ pool_name }}"
+      ignore_errors: yes
+
+    - name: Remove the storage pool directory
+      file:
+        path: "{{ pool_path }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Ensure the RHEL LAB pool is no longer listed
+      community.libvirt.virt_pool:
+        command: list
+        name: "{{ pool_name }}"
+        state: absent
+      ignore_errors: yes

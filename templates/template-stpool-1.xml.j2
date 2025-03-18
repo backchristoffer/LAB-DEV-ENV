@@ -2,5 +2,12 @@
   <name>{{ pool_name }}</name>
   <target>
     <path>{{ pool_path }}</path>
+    <permissions>
+      <mode>0770</mode>
+    </permissions>
   </target>
+  <owner>
+    <user name="root"/>
+    <group name="qemu"/>
+  </owner>
 </pool>

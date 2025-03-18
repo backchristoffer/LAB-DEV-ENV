@@ -9,7 +9,7 @@
     cpu_number: 8
     storagepool_name: "rhel-lab-pool-1"
     netpool_name: "rhel-netpool-1"
-    iso_path: "/home/rhelsa/rhel94-lab.qcow2"
+    iso_path: "/home/rhelsa/images/rhel94-lab.qcow2"
 
   tasks: 
     - name: Check connection to server

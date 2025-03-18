@@ -1,0 +1,45 @@
+---
+- name: Create a RHEL LAB storage pool with libvirt
+  hosts: all
+  become: yes
+  vars:
+    pool_name: rhel-lab-pool-1
+    pool_path: /home/rhelsa/rhel-lab-pool-1
+
+  tasks:
+    - name: Ensure the storage pool directory exists
+      file:
+        path: "{{ pool_path }}"
+        state: directory
+        owner: root
+        group: qemu
+        mode: '0770'
+
+    - name: Define the RHEL LAB storage pool
+      community.libvirt.virt_pool:
+        command: define
+        autostart: true
+        name: "{{ pool_name }}"
+        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+      
+    - name: Build the RHEL LAB storage pool
+      community.libvirt.virt_pool:
+        command: build
+        name: "{{ pool_name }}"
+      ignore_errors: yes
+
+    - name: Start the RHEL LAB storage pool
+      community.libvirt.virt_pool:
+        command: create
+        name: "{{ pool_name }}"
+      ignore_errors: yes
+
+    - name: Ensure that the RHEL LAB pool is active
+      community.libvirt.virt_pool:
+        state: active
+        name: "{{ pool_name }}"
+
+    - name: RHEL LAB pool should autostart
+      community.libvirt.virt_pool:
+        autostart: true
+        name: "{{ pool_name }}"
