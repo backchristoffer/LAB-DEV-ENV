@@ -1,0 +1,72 @@
+name = "rhel94-lab"
+description = "RHEL 9.4 image for easy lab use."
+version = "1.0.0"
+
+[[packages]]
+name = "selinux-policy-targeted"
+version = "*"
+
+[[packages]]
+name = "policycoreutils"
+version = "*"
+
+[[packages]]
+name = "cloud-init"
+version = "*"
+
+[[packages]]
+name = "qemu-guest-agent"
+version = "*"
+
+[[packages]]
+name = "bash"
+version = "*"
+
+[[packages]]
+name = "vim"
+version = "*"
+
+[[packages]]
+name = "wget"
+version = "*"
+
+[[packages]]
+name = "firewalld"
+version = "*"
+
+[customizations]
+hostname = "rhel94-lab"
+
+[[customizations.user]]
+name = "admin"
+description = "easy admin example"
+password = "admin"
+groups = ["wheel"]
+home = "/home/admin"
+shell = "/bin/bash"
+
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp"]
+
+[customizations.services]
+enabled = ["sshd", "qemu-guest-agent", "cloud-init"]
+disabled = []
+
+[customizations.selinux]
+enabled = true
+state = "enforcing"
+
+[customizations.kernel]
+append = "console=ttyS0"
+
+[image]
+name = "rhel94-lab"
+distribution = "rhel-94"
+format = "qcow2"
+size = 21474836480
+
+# Include kickstart and cloud-init files (paths for your image)
+[files]
+kickstart_file = "ks.cfg"
+cloud_init_user_data = "user-data"
+cloud_init_cfg = "cloud.cfg"

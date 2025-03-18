@@ -9,7 +9,7 @@
     cpu_number: 8
     storagepool_name: "rhel-lab-pool-1"
     netpool_name: "rhel-netpool-1"
-    iso_path: "/home/rhelsa/"
+    iso_path: "/home/rhelsa/rhel94-lab.qcow2"
 
   tasks: 
     - name: Check connection to server
@@ -28,7 +28,8 @@
       when: not ping_re.failed 
 
     - name: Define the RHEL LAB vm
-      community.libvirt.libvirt_domain:
+      community.libvirt.virt:
         name: "{{ vm_name }}"
-        state: "defined"
-        xml: "{{ lookup('template', 'template-rhel-94.xml.j2') }}"
+        xml: "{{ lookup('template', '../templates/template-rhel-94.xml.j2') }}"
+        command: define
+        autostart: true

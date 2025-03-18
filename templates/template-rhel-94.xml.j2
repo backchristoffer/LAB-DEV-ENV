@@ -2,30 +2,30 @@
   <name>{{ vm_name }}</name>
   <memory unit='GiB'>{{ memory_gb }}</memory>
   <vcpu placement='static'>{{ cpu_number }}</vcpu>
-  <os>
-    <type arch='x86_64' machine='q35-7.1'>hvm</type>
+    <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='cdrom'/>
     <boot dev='hd'/>
-  </os>
+    </os>
+
   <devices>
+    <controller type='pci' index='0' model='pcie-root'/>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source pool='{{ storagepool_name }}' file='{{ vm_name }}-vm.qcow2'/>
       <target dev='vda' bus='virtio'/>
-      <address type='pci' slot='0x04'/>
     </disk>
     <interface type='network'>
       <mac address='52:54:00:5f:3e:1d'/>
       <source network='{{ netpool_name }}'/>
       <model type='virtio'/>
-      <address type='pci' slot='0x03'/>
     </interface>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source file='{{ iso_path }}'/>
-      <target dev='hdc'/>
-      <address type='pci' slot='0x05'/>
+      <target dev='sda' bus='sata'/>
     </disk>
     <console type='pty'/>
   </devices>
+
 </domain>

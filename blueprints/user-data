@@ -1,0 +1,17 @@
+users:
+  - name: admin
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    passwd: admin
+
+ssh_pwauth: true
+disable_root: false
+runcmd:
+  - systemctl enable sshd
+  - systemctl start sshd
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - systemctl enable cloud-init
+  - systemctl start cloud-init
