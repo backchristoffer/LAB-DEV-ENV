@@ -6,6 +6,7 @@
     <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
     <boot dev='cdrom'/>
+    <kernel_args value="console=ttyS0,115200n8"/>
   </os>
   <devices>
     <controller type='pci' index='0' model='pcie-root'/>
@@ -17,7 +18,7 @@
     </disk>
 
     <interface type='network'>
-      <source network='{{ netpool_name }}'/>
+      <source network='{{ rhel_net_name }}'/>
       <model type='virtio'/>
     </interface>
 
@@ -28,11 +29,11 @@
     </disk>
 
     <serial type='pty'>
-      <target port='0'/>
+    <target port='0'/>
     </serial>
-
     <console type='pty'>
-      <target type='virtio'/>
+    <target type='serial'/>
     </console>
+
   </devices>
 </domain>

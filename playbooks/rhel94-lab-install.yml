@@ -4,13 +4,14 @@
   become: yes
   vars:
     vm_name: "cback-rhel94-lab"
-    memory_gb: 16384 
+    memory_gb: 16
     cpu_number: 8
-    storagepool_name: "rhel-lab-pool-1"
-    netpool_name: "rhel-netpool-1"
+    rhel_pool_name: "rhel-lab-pool-1"
+    rhel_net_name: "rhel-netpool-1"
     iso_path: "/home/rhelsa/images/rhel94-lab.qcow2"
+    rhel_pool_path: "/home/rhelsa/{{ rhel_pool_name }}"
     disk_size: "40G"
-    disk_image_path: "/home/rhelsa/{{ storagepool_name }}/{{ vm_name }}-vm.qcow2"
+    disk_image_path: "/home/rhelsa/{{ rhel_pool_name }}/{{ vm_name }}-vm.qcow2"
     bridge_name: "virbr1"
 
   tasks:
@@ -24,29 +25,29 @@
     - name: Ensure storage pool is defined
       community.libvirt.virt_pool:
         command: define
-        name: "{{ storagepool_name }}"
-        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+        name: "{{ rhel_pool_name }}"
+        xml: "{{ lookup('template', '../templates/template-rhelstoragepool-1.xml.j2') }}"
       ignore_errors: yes
 
     - name: Start and activate storage pool
       community.libvirt.virt_pool:
         state: active
-        name: "{{ storagepool_name }}"
+        name: "{{ rhel_pool_name }}"
 
     - name: Ensure storage pool is persistent
       community.libvirt.virt_pool:
         state: present
-        name: "{{ storagepool_name }}"
+        name: "{{ rhel_pool_name }}"
 
     - name: Start and activate network pool
       community.libvirt.virt_net:
         state: active
-        name: "{{ netpool_name }}"
+        name: "{{ rhel_net_name }}"
 
     - name: Ensure network pool is persistent
       community.libvirt.virt_net:
         state: present
-        name: "{{ netpool_name }}"
+        name: "{{ rhel_net_name }}"
 
     - name: Check if disk image exists
       ansible.builtin.stat:
