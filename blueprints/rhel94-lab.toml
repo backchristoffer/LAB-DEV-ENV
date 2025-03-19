@@ -39,7 +39,6 @@ hostname = "rhel94-lab"
 
 [[customizations.user]]
 name = "admin"
-description = "easy admin example"
 password = "admin"
 groups = ["wheel"]
 home = "/home/admin"
@@ -50,20 +49,16 @@ ports = ["22:tcp", "80:tcp"]
 
 [customizations.services]
 enabled = ["sshd", "qemu-guest-agent", "cloud-init"]
-disabled = []
 
 [customizations.selinux]
 enabled = true
 state = "enforcing"
 
 [customizations.kernel]
-append = "console=ttyS0"
+append = "console=ttyS0 console=ttyS1,115200n8"
 
 [image]
 name = "rhel94-lab"
 distribution = "rhel-94"
 format = "qcow2"
 size = 21474836480
-
-[files]
-kickstart_file = "ks.cfg"
