@@ -1,44 +1,79 @@
-- name: Setup the main lab environment - hypervisor
+# Installs a RHEL 9.4 lab on a RHEL 9.4 libvirt host
+- name: Setup the RHEL 9.4 Lab VM
   hosts: all
   become: yes
   vars:
     vm_name: "cback-rhel94-lab"
-    memory_gb: 16
+    memory_gb: 16384 
     cpu_number: 8
     storagepool_name: "rhel-lab-pool-1"
     netpool_name: "rhel-netpool-1"
     iso_path: "/home/rhelsa/images/rhel94-lab.qcow2"
+    disk_size: "40G"
     disk_image_path: "/home/rhelsa/{{ storagepool_name }}/{{ vm_name }}-vm.qcow2"
+    bridge_name: "virbr1"
 
   tasks:
-    - name: Check connection
-      ping:
+    - name: Check connection to server
+      ansible.builtin.ping:
 
-    - name: Create storage pool if missing
-      shell: |
-        virsh pool-define-as --name {{ storagepool_name }} --type dir --target /home/rhelsa/{{ storagepool_name }}
-        virsh pool-start {{ storagepool_name }}
-        virsh pool-autostart {{ storagepool_name }}
-      args:
-        executable: /bin/bash
-      when: "'{{ storagepool_name }}' not in lookup('pipe', 'virsh pool-list --all')"
+    - name: Logging for ping success
+      ansible.builtin.debug:
+        msg: "Ping successful. RHEL94 server can be reached. Proceeding with installation"
 
-    - name: Create disk image if missing
-      command: qemu-img create -f qcow2 "{{ disk_image_path }}" 40G
-      args:
-        creates: "{{ disk_image_path }}"
+    - name: Ensure storage pool is defined
+      community.libvirt.virt_pool:
+        command: define
+        name: "{{ storagepool_name }}"
+        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+      ignore_errors: yes
 
-    - name: Define the RHEL LAB VM
+    - name: Start and activate storage pool
+      community.libvirt.virt_pool:
+        state: active
+        name: "{{ storagepool_name }}"
+
+    - name: Ensure storage pool is persistent
+      community.libvirt.virt_pool:
+        state: present
+        name: "{{ storagepool_name }}"
+
+    - name: Start and activate network pool
+      community.libvirt.virt_net:
+        state: active
+        name: "{{ netpool_name }}"
+
+    - name: Ensure network pool is persistent
+      community.libvirt.virt_net:
+        state: present
+        name: "{{ netpool_name }}"
+
+    - name: Check if disk image exists
+      ansible.builtin.stat:
+        path: "{{ disk_image_path }}"
+      register: img_stat
+
+    - name: Create disk image if it does not exist
+      ansible.builtin.command:
+        cmd: "qemu-img create -f qcow2 '{{ disk_image_path }}' {{ disk_size }}"
+      when: not img_stat.stat.exists
+
+    - name: Define the RHEL 9.4 VM
       community.libvirt.virt:
         name: "{{ vm_name }}"
-        xml: "{{ lookup('template', '../templates/template-rhel-94.xml.j2') }}"
         command: define
+        xml: "{{ lookup('template', '../templates/template-rhel-94.xml.j2') }}"
+
+    - name: Autostart VM on host boot
+      community.libvirt.virt:
+        name: "{{ vm_name }}"
         autostart: true
 
-    - name: Start VM
-      command: virsh start "{{ vm_name }}"
+    - name: Start the VM
+      community.libvirt.virt:
+        name: "{{ vm_name }}"
+        state: running
 
-    - name: Enable serial console
-      command: |
-        virsh console {{ vm_name }} --force
-      ignore_errors: yes
+    - name: Log installation success
+      ansible.builtin.debug:
+        msg: "RHEL 9.4 VM installation successful!"

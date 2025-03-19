@@ -1,0 +1,10 @@
+<network>
+  <name>{{ ocp_net_name }}</name>
+  <bridge name='{{ ocp_bridge }}'/>
+  <forward mode='nat'/>
+  <ip address='{{ ocp_ip }}' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='{{ ocp_range_start }}' end='{{ ocp_range_end }}'/>
+    </dhcp>
+  </ip>
+</network>

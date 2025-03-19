@@ -1,0 +1,10 @@
+<network>
+  <name>{{ rhel_net_name }}</name>
+  <bridge name='{{ rhel_bridge }}'/>
+  <forward mode='nat'/>
+  <ip address='{{ rhel_ip }}' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='{{ rhel_range_start }}' end='{{ rhel_range_end }}'/>
+    </dhcp>
+  </ip>
+</network>

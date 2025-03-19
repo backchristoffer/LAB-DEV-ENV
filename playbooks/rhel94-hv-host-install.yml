@@ -43,7 +43,23 @@
           - libvirt
           - virt-install
           - virt-viewer
+          - osbuild-composer
+          - composer-cli
+          - cockpit-composer
         state: present
+
+    - name: Enable RHEL Image composer-cli
+      ansible.builtin.service:
+        name: osbuild-composer 
+        state: started
+        enabled: yes
+
+    - name: Enable RHEL Image cockpit
+      ansible.builtin.service:
+        name: cockpit 
+        state: started
+        enabled: yes
+
 
     - name: Enable virtualization services
       ansible.builtin.service:
@@ -86,7 +102,7 @@
       community.libvirt.virt_pool:
         command: define
         name: "{{ ocp_pool_name }}"
-        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+        xml: "{{ lookup('template', '../templates/template-ocpstoragepool-1.xml.j2') }}"
       vars:
         pool_name: "{{ ocp_pool_name }}"
         pool_path: "{{ ocp_pool_path }}"
@@ -100,7 +116,7 @@
       community.libvirt.virt_pool:
         command: define
         name: "{{ rhel_pool_name }}"
-        xml: "{{ lookup('template', '../templates/template-stpool-1.xml.j2') }}"
+        xml: "{{ lookup('template', '../templates/template-rhelstoragepool-1.xml.j2') }}"
       vars:
         pool_name: "{{ rhel_pool_name }}"
         pool_path: "{{ rhel_pool_path }}"
@@ -114,7 +130,7 @@
       community.libvirt.virt_net:
         command: define
         name: "{{ ocp_net_name }}"
-        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+        xml: "{{ lookup('template', '../templates/template-ocpnetpool-1.xml.j2') }}"
       vars:
         pool_name: "{{ ocp_net_name }}"
         bridge_name: "{{ ocp_bridge }}"
@@ -126,7 +142,7 @@
       community.libvirt.virt_net:
         command: define
         name: "{{ rhel_net_name }}"
-        xml: "{{ lookup('template', '../templates/template-netpool-1.xml.j2') }}"
+        xml: "{{ lookup('template', '../templates/template-rhelnetpool-1.xml.j2') }}"
       vars:
         pool_name: "{{ rhel_net_name }}"
         bridge_name: "{{ rhel_bridge }}"
