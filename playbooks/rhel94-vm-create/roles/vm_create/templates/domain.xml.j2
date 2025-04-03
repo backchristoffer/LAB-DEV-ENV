@@ -29,29 +29,14 @@
         <readonly/>
     </disk>
 
-<<<<<<< HEAD:templates/template-rhel-94.xml.j2
     <serial type='pty'>
-<<<<<<< HEAD
-    <source path='/dev/ttyS0'/>
-    <target port='0'/>
-    </serial>
-    <console type='pty'>
-    <source path='/dev/ttyS0'/>
-=======
-    <source path='/dev/tty50'/>
-    <target port='0'/>
-    </serial>
-    <console type='pty'>
-    <source path='/dev/tty50'/>
->>>>>>> e380c6d (local sync)
-    <target type='serial'/>
-=======
-    <console type='pty'>
-        <target type='serial' port='0'/>
->>>>>>> 03e1917 (I had to configure the hypervisor setup and make sure that worked properly.):playbooks/rhel94-vm-create/roles/vm_create/templates/domain.xml.j2
-    </console>
-    <serial type='pty'>
+        <source path='/dev/ttyS0'/>
         <target port='0'/>
     </serial>
+    <console type='pty'>
+        <source path='/dev/ttyS0'/>
+        <target type='serial' port='0'/>
+    </console>
+
   </devices>
 </domain>
