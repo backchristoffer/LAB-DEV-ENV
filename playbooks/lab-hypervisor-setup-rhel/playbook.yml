@@ -1,0 +1,11 @@
+# This playbook prepares my RHEL hypervisor host using libvirt, qemu, kvm
+- name: Setup the main lab environment - hypervisor
+  hosts: all
+  become: yes
+  roles:
+    - base_setup
+    - virtualization
+    - users_acl
+    - storage_pools
+    - network_pools
+    - network_config

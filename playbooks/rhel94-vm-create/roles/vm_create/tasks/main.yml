@@ -1,0 +1,40 @@
+- name: Clone base image
+  ansible.builtin.copy:
+    src: "{{ base_image_path }}"
+    dest: "{{ vm_image_path }}"
+    remote_src: true
+    mode: '0644'
+
+- name: Generate user-data for cloud-init
+  ansible.builtin.template:
+    src: templates/user-data.j2
+    dest: "/tmp/user-data"
+    mode: '0644'
+
+- name: Create meta-data for cloud-init
+  ansible.builtin.copy:
+    dest: "/tmp/meta-data"
+    content: |
+      instance-id: {{ vm_name }}
+      local-hostname: {{ hostname }}
+    mode: '0644'
+
+- name: Create cloud-init ISO
+  ansible.builtin.command:
+    cmd: >
+      genisoimage -output {{ cloud_init_iso_path }}
+                  -volid cidata
+                  -joliet -rock
+                  /tmp/user-data /tmp/meta-data
+  args:
+    creates: "{{ cloud_init_iso_path }}"
+
+- name: Define the VM
+  community.libvirt.virt:
+    command: define
+    xml: "{{ lookup('template', 'templates/domain.xml.j2') }}"
+
+- name: Start the VM
+  community.libvirt.virt:
+    name: "{{ vm_name }}"
+    state: running

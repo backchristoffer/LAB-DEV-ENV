@@ -1,0 +1,23 @@
+- name: Create lab users
+  user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    create_home: yes
+    state: present
+    system: true
+  loop:
+    - { name: 'ocpsa', groups: 'libvirt' }
+    - { name: 'rhelsa', groups: 'libvirt' }
+    - { name: 'cback', groups: 'wheel, libvirt' }
+
+- name: Set ACLs for qemu on home dirs
+  ansible.posix.acl:
+    path: "/home/{{ item }}"
+    entity: qemu
+    etype: user
+    permissions: x
+    state: present
+  loop:
+    - cback
+    - rhelsa
+    - ocpsa

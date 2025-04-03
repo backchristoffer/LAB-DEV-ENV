@@ -1,0 +1,30 @@
+- name: Check connection to server
+  ping:
+
+- name: Update system
+  dnf:
+    name: '*'
+    state: latest
+
+- name: Install required packages
+  dnf:
+    name:
+      - bash-completion
+      - git
+      - vim
+      - python3
+      - python3-pip
+      - podman
+      - wget
+      - qemu-kvm
+      - libvirt
+      - virt-install
+      - virt-viewer
+      - osbuild-composer
+      - composer-cli
+      - cockpit-composer
+      - libguestfs-tools
+      - libguestfs-tools-c
+      - pykickstart
+      - httpd
+    state: present

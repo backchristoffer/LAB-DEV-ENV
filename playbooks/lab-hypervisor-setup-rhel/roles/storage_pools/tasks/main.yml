@@ -1,0 +1,32 @@
+- name: Ensure storage pool directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: qemu
+    group: qemu
+    mode: '0770'
+  loop:
+    - "{{ ocp_pool_path }}"
+    - "{{ rhel_pool_path }}"
+
+- name: Define and start OpenShift storage pool
+  community.libvirt.virt_pool:
+    command: define
+    name: "{{ ocp_pool_name }}"
+    xml: "{{ lookup('template', 'template-ocpstoragepool-1.xml.j2') }}"
+
+- name: Activate OpenShift storage pool
+  community.libvirt.virt_pool:
+    state: active
+    name: "{{ ocp_pool_name }}"
+
+- name: Define and start RHEL LAB storage pool
+  community.libvirt.virt_pool:
+    command: define
+    name: "{{ rhel_pool_name }}"
+    xml: "{{ lookup('template', 'template-rhelstoragepool-1.xml.j2') }}"
+
+- name: Activate RHEL LAB storage pool
+  community.libvirt.virt_pool:
+    state: active
+    name: "{{ rhel_pool_name }}"

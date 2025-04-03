@@ -1,0 +1,44 @@
+# I've used this for lab purposes to clear any crap that was left when I tested playbook 'rhel94-vm-create'
+---
+- name: Clear rhel94-vm1 VM and related files
+  hosts: all
+  become: true
+  tasks:
+    - name: Stop VM if running
+      community.libvirt.virt:
+        name: rhel94-vm1
+        state: destroyed
+      ignore_errors: true
+
+    - name: Undefine VM and remove storage
+      community.libvirt.virt:
+        name: rhel94-vm1
+        command: undefine
+        remove_images: true
+      ignore_errors: true
+
+    - name: Unmount ISO if mounted
+      ansible.builtin.mount:
+        path: /mnt
+        state: unmounted
+      ignore_errors: true
+
+    - name: Remove VM qcow2 image
+      ansible.builtin.file:
+        path: /home/rhelsa/images/rhel94-vm1.qcow2
+        state: absent
+
+    - name: Remove cloud-init ISO
+      ansible.builtin.file:
+        path: /home/rhelsa/images/rhel94-vm1-cloud-init.iso
+        state: absent
+
+    - name: Remove tmp user-data
+      ansible.builtin.file:
+        path: /tmp/rhel94-vm1-user-data
+        state: absent
+
+    - name: Remove tmp meta-data
+      ansible.builtin.file:
+        path: /tmp/rhel94-vm1-meta-data
+        state: absent

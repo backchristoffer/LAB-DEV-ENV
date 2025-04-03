@@ -1,0 +1,33 @@
+- name: Ensure firewalld is started and enabled
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+    
+- name: Ensure virbr* bridges are unmanaged by NetworkManager
+  ansible.builtin.copy:
+    dest: /etc/NetworkManager/conf.d/99-libvirt-bridges.conf
+    content: |
+      [keyfile]
+      unmanaged-devices=interface-name:virbr1;interface-name:virbr2
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload NetworkManager to apply unmanaged device config
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
+
+- name: Assign bridges to 'libvirt' firewalld zone
+  ansible.posix.firewalld:
+    zone: libvirt
+    interface: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - virbr1
+    - virbr2
+
+
