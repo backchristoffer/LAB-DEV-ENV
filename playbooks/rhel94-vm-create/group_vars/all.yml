@@ -20,7 +20,7 @@ users:
     groups: wheel
     shell: /bin/bash
     # This password is 'admin' but hashed with openssl passwd -6 admin
-    passwd: "$6$rounds=4096$MCFUN0hfvgv6Lszt$xzC5Gz7Dc92X1Pruw.FaUL2RSV8TDta.PoHMMWLo5/ZteNjWTxEN5Vp9eSNeDXpsMYxIj8JY5EK3g/nFwscOO0"
+    passwd: "$6$rounds=4096$MTHISISAHASHEDPASSWORD"
 
 packages:
   - git
