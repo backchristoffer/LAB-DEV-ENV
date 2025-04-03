@@ -1,0 +1,28 @@
+#cloud-config
+hostname: {{ hostname }}
+users:
+{% for user in users %}
+  - name: {{ user.name }}
+    groups: {{ user.groups }}
+    shell: {{ user.shell }}
+    lock_passwd: false
+    passwd: "{{ user.passwd }}"  # Ensure this is hashed or plaintext depending on your use case
+{% endfor %}
+
+packages:
+{% for pkg in packages %}
+  - {{ pkg }}
+{% endfor %}
+
+runcmd:
+{% for cmd in runcmd %}
+  - {{ cmd }}
+{% endfor %}
+  - echo 'ttyS0' >> /etc/securetty
+  - systemctl enable serial-getty@ttyS0.service
+
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true

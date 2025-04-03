@@ -1,0 +1,23 @@
+- name: Define OpenShift network
+  community.libvirt.virt_net:
+    command: define
+    name: "{{ ocp_net_name }}"
+    xml: "{{ lookup('template', 'template-ocpnetpool-1.xml.j2') }}"
+
+- name: Define RHEL LAB network
+  community.libvirt.virt_net:
+    command: define
+    name: "{{ rhel_net_name }}"
+    xml: "{{ lookup('template', 'template-rhelnetpool-1.xml.j2') }}"
+
+- name: Start OpenShift network
+  community.libvirt.virt_net:
+    state: active
+    name: "{{ ocp_net_name }}"
+    autostart: true
+
+- name: Start RHEL LAB network
+  community.libvirt.virt_net:
+    state: active
+    name: "{{ rhel_net_name }}"
+    autostart: true

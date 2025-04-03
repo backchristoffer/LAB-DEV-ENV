@@ -1,0 +1,16 @@
+ocp_pool_name: "ocp-pool-1"
+ocp_pool_path: "/home/ocpsa/ocp-pool-1"
+rhel_pool_name: "rhel-lab-pool-1"
+rhel_pool_path: "/home/rhelsa/rhel-lab-pool-1"
+
+ocp_net_name: "ocp-netpool-1"
+ocp_bridge: "virbr1"
+ocp_ip: "192.168.10.20"
+ocp_range_start: "192.168.10.21"
+ocp_range_end: "192.168.10.100"
+
+rhel_net_name: "rhel-netpool-1"
+rhel_bridge: "virbr2"
+rhel_ip: "192.168.11.20"
+rhel_range_start: "192.168.11.21"
+rhel_range_end: "192.168.11.100"

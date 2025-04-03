@@ -1,0 +1,32 @@
+vm_name: rhel94-vm1
+memory_gb: 2
+cpu_count: 2
+disk_size: 20G
+base_image_name: "rhel-9.4-x86_64-kvm.qcow2"
+
+# Pre-downloaded base image path - Download the .qcow2 image from Red Hat
+base_image_path: "/home/rhelsa/images/{{ base_image_name }}"
+vm_image_path: "/home/rhelsa/images/{{ vm_name }}.qcow2"
+cloud_init_iso_path: "/home/rhelsa/images/{{ vm_name }}-cloud-init.iso"
+
+rhel_net_name: rhel-netpool-1
+rhel_pool_name: rhel-lab-pool-1
+rhel_pool_path: /home/rhelsa/rhel-lab-pool-1
+
+hostname: "{{ vm_name }}"
+
+users:
+  - name: admin
+    groups: wheel
+    shell: /bin/bash
+    # This password is 'admin' but hashed with openssl passwd -6 admin
+    passwd: "$6$rounds=4096$MCFUN0hfvgv6Lszt$xzC5Gz7Dc92X1Pruw.FaUL2RSV8TDta.PoHMMWLo5/ZteNjWTxEN5Vp9eSNeDXpsMYxIj8JY5EK3g/nFwscOO0"
+
+packages:
+  - git
+  - vim
+  - curl
+
+runcmd:
+  - systemctl enable sshd
+  - systemctl start sshd

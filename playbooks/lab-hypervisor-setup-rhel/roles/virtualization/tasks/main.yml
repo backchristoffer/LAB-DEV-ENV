@@ -1,0 +1,26 @@
+- name: Enable Image Builder (osbuild-composer)
+  service:
+    name: osbuild-composer
+    state: started
+    enabled: true
+
+- name: Enable Cockpit
+  service:
+    name: cockpit
+    state: started
+    enabled: true
+
+- name: Enable libvirt daemon
+  service:
+    name: libvirtd
+    state: started
+    enabled: true
+
+- name: Validate virtualization
+  command: virt-host-validate
+  register: validation_output
+  changed_when: false
+
+- name: Show virtualization validation results
+  debug:
+    msg: "{{ validation_output.stdout_lines }}"
