@@ -1,7 +1,0 @@
-- name: Create OCP4.18 SNO Cluster
-  hosts: all
-  become: true
-  vars_files:
-    - group_vars/all.yml
-  roles:
-    - sno_create

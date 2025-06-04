@@ -1,0 +1,24 @@
+---
+- name: Download openshift-install
+  ansible.builtin.get_url:
+    url: "{{ ocp_installer_url }}"
+    dest: "{{ ocp_workdir }}/install/openshift-install.tar.gz"
+    mode: '0755'
+
+- name: Download oc CLI
+  ansible.builtin.get_url:
+    url: "{{ ocp_cli_url }}"
+    dest: "{{ ocp_workdir }}/install/oc.tar.gz"
+    mode: '0755'
+
+- name: Extract openshift-install
+  ansible.builtin.unarchive:
+    src: "{{ ocp_workdir }}/install/openshift-install.tar.gz"
+    dest: "{{ ocp_workdir }}/install/"
+    remote_src: true
+
+- name: Extract oc CLI
+  ansible.builtin.unarchive:
+    src: "{{ ocp_workdir }}/install/oc.tar.gz"
+    dest: "{{ ocp_workdir }}/install/"
+    remote_src: true

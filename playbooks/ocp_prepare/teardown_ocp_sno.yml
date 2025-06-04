@@ -1,0 +1,50 @@
+---
+- name: Teardown OCP Single Node (sno01)
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Destroy libvirt VM sno01
+      community.libvirt.virt:
+        name: sno01
+        state: destroyed
+        uri: qemu:///system
+      ignore_errors: true
+
+    - name: Undefine libvirt VM sno01
+      community.libvirt.virt:
+        name: sno01
+        state: absent
+        uri: qemu:///system
+      ignore_errors: true
+
+    - name: Remove sno01 VM disk image
+      ansible.builtin.file:
+        path: "/var/lib/libvirt/images/sno01.qcow2"
+        state: absent
+
+    - name: Remove OpenShift cluster directory
+      ansible.builtin.file:
+        path: "/home/{{ ocpuser }}/ocp-cluster"
+        state: absent
+
+    - name: Get list of libvirt VMs
+      command: virsh list --all --name
+      register: libvirt_vms
+
+    - name: Destroy leftover bootstrap VMs
+      community.libvirt.virt:
+        name: "{{ item }}"
+        state: destroyed
+        uri: qemu:///system
+      loop: "{{ libvirt_vms.stdout_lines | select('match', '^example-cluster-.*bootstrap$') | list }}"
+      ignore_errors: true
+
+    - name: Undefine leftover bootstrap VMs
+      community.libvirt.virt:
+        name: "{{ item }}"
+        state: absent
+        uri: qemu:///system
+      loop: "{{ libvirt_vms.stdout_lines | select('match', '^example-cluster-.*bootstrap$') | list }}"
+      ignore_errors: true
+

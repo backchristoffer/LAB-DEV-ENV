@@ -1,0 +1,12 @@
+- name: Ensure RHCOS image directory exists
+  ansible.builtin.file:
+    path: "{{ ocp_workdir }}/rhcos"
+    state: directory
+    mode: '0755'
+
+- name: Download RHCOS live ISO
+  ansible.builtin.get_url:
+    url: "{{ rhcos_live_iso_url }}"
+    dest: "{{ ocp_workdir }}/rhcos/rhcos-live.iso"
+    mode: '0644'
+    force: no

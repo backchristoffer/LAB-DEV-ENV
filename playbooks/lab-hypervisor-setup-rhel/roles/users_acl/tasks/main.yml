@@ -10,14 +10,24 @@
     - { name: 'rhelsa', groups: 'libvirt' }
     - { name: 'cback', groups: 'wheel, libvirt' }
 
-- name: Set ACLs for qemu on home dirs
+- name: Set ACLs for qemu and root on home dirs
   ansible.posix.acl:
     path: "/home/{{ item }}"
-    entity: qemu
+    entity: "{{ acl_user }}"
     etype: user
-    permissions: x
+    permissions: rwx
     state: present
-  loop:
-    - cback
-    - rhelsa
-    - ocpsa
+  loop: "{{ ['cback', 'rhelsa', 'ocpsa'] | product(['qemu', 'root']) | list }}"
+  loop_control:
+    loop_var: pair
+  vars:
+    item: "{{ pair.0 }}"
+    acl_user: "{{ pair.1 }}"
+
+- name: Set ACL for cback on /home/ocpsa
+  ansible.posix.acl:
+    path: /home/ocpsa
+    entity: cback
+    etype: user
+    permissions: rwx
+    state: present

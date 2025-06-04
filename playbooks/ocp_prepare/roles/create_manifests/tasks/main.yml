@@ -1,0 +1,23 @@
+- name: Create OpenShift manifests
+  ansible.builtin.command:
+    cmd: openshift-install create manifests --dir {{ ocp_workdir }}/install
+  environment:
+    KUBECONFIG: "{{ ocp_workdir }}/install/auth/kubeconfig"
+  args:
+    chdir: "{{ ocp_workdir }}/install"
+  register: create_manifests_output
+  changed_when: "'manifests' in create_manifests_output.stdout"
+
+- name: Check if manifests directory exists
+  ansible.builtin.stat:
+    path: "{{ ocp_workdir }}/install/manifests"
+  register: manifests_dir
+
+- name: Create manifests using openshift-install
+  ansible.builtin.command: >
+    {{ ocp_workdir }}/bin/openshift-install create manifests
+    --dir {{ ocp_workdir }}/install
+  args:
+    chdir: "{{ ocp_workdir }}/install"
+  register: create_manifests_result
+  changed_when: "'manifests' in create_manifests_result.stdout"

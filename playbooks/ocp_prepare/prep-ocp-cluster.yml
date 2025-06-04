@@ -1,0 +1,16 @@
+---
+- name: Prepare host for OpenShift cluster deployment
+  hosts: all
+  become: true
+  vars_files:
+    - group_vars/all.yml
+
+  roles:
+    - libvirt_dnsmasq
+    - ocp_dirs
+    - ocp_tools
+    - ocp_ssh
+    - generate_pull_secret
+    - ocp_rhcos
+    - ocp_configs
+    - ocp_install

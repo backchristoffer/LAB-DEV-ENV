@@ -1,0 +1,13 @@
+---
+- name: Generate SSH key for ocpsa if not present
+  ansible.builtin.command: ssh-keygen -t rsa -N "" -f /home/ocpsa/.ssh/id_rsa
+  args:
+    creates: /home/ocpsa/.ssh/id_rsa
+
+- name: Copy generated SSH public key to install directory
+  ansible.builtin.copy:
+    remote_src: true
+    src: /home/ocpsa/.ssh/id_rsa.pub
+    dest: "{{ ocp_workdir }}/install/ssh-key.pub"
+    mode: '0644'
+

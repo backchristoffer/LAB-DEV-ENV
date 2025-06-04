@@ -1,0 +1,24 @@
+- name: Create OpenShift manifests
+  ansible.builtin.command:
+    argv:
+      - "{{ ocp_workdir }}/install/openshift-install"
+      - create
+      - manifests
+      - "--dir={{ ocp_workdir }}/install"
+      - "--log-level=debug"
+  register: manifest_output
+  changed_when: false
+
+
+- name: Run OpenShift installer to create cluster
+  ansible.builtin.command:
+    argv:
+      - "{{ ocp_workdir }}/install/openshift-install"
+      - create
+      - cluster
+      - "--dir={{ ocp_workdir }}/install"
+      - "--log-level=debug"
+  args:
+    chdir: "{{ ocp_workdir }}/install"
+  register: cluster_install_output
+  changed_when: false

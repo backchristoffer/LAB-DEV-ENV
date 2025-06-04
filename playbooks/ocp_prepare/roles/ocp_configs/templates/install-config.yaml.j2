@@ -1,0 +1,46 @@
+apiVersion: v1
+baseDomain: {{ cluster_base_domain }}
+metadata:
+  name: {{ cluster_name }}
+compute:
+  - name: worker
+    replicas: 0
+controlPlane:
+  name: master
+  replicas: 1
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIPs:
+      - {{ api_vip }}
+    ingressVIPs:
+      - {{ ingress_vip }}
+    provisioningBridge: {{ ocp_bridge }}
+    externalBridge: {{ ocp_bridge }}
+    hosts:
+{% for host in baremetal_hosts %}
+      - name: {{ host.name }}
+        role: {{ host.role }}
+        bmc:
+          address: {{ host.bmc_address }}
+          username: {{ host.bmc_username }}
+          password: {{ host.bmc_password }}
+        bootMACAddress: {{ host.mac_address }}
+        bootMode: {{ host.boot_mode }}
+        rootDeviceHints:
+          deviceName: {{ host.root_device }}
+{% endfor %}
+pullSecret: '{{ pull_secret_content }}'
+sshKey: '{{ ssh_pub_key_content }}'
+machineNetwork:
+  - cidr: {{ ocp_machine_network_cidr }}
+networking:
+  networkType: OVNKubernetes
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+  serviceNetwork:
+    - 172.30.0.0/16
+  machineNetwork:
+    - cidr: {{ ocp_machine_network_cidr }}

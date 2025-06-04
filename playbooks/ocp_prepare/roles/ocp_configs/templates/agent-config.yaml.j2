@@ -1,0 +1,12 @@
+apiVersion: agent-install.openshift.io/v1beta1
+kind: AgentConfig
+metadata:
+  name: {{ cluster_name }}
+rendezvousIP: {{ rendezvous_ip }}
+hosts:
+{% for host in cluster_nodes %}
+  - hostname: {{ host.hostname }}
+    role: {{ host.role }}
+    interfaces:
+      - name: {{ host.nic }}
+{% endfor %}

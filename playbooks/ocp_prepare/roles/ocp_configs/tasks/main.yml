@@ -1,0 +1,19 @@
+---
+- name: Read pull secret file content
+  ansible.builtin.slurp:
+    src: "{{ pull_secret_dir }}/pull-secret.json"
+  register: slurped_pull_secret
+
+- name: Read SSH public key content
+  ansible.builtin.slurp:
+    src: "{{ ssh_pub_key_file }}"
+  register: slurped_ssh_pubkey
+
+- name: Template install-config.yaml
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "{{ ocp_workdir }}/install/install-config.yaml"
+    mode: '0644'
+  vars:
+    pull_secret_content: "{{ slurped_pull_secret.content | b64decode }}"
+    ssh_pub_key_content: "{{ slurped_ssh_pubkey.content | b64decode }}"

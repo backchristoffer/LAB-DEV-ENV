@@ -1,0 +1,5 @@
+- name: Create ignition configs
+  ansible.builtin.command: openshift-install create ignition-configs --dir {{ ocp_workdir }}/install
+  register: ignition_output
+  changed_when: "'Wrote' in ignition_output.stdout"
+  failed_when: ignition_output.rc != 0

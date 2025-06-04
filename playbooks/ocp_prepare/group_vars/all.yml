@@ -1,0 +1,62 @@
+#ocp_dirs
+ocp_workdir: "/home/{{ ocpuser }}/ocp-cluster"
+#ocp_tools
+ocp_installer_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.18.4/openshift-install-linux.tar.gz"
+ocp_cli_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.18.4/openshift-client-linux.tar.gz"
+#ocp_secrets
+local_pull_secret: "/home/{{ ocpuser }}/pull-secret.txt"
+local_ssh_pubkey: "/home/{{ ocpuser }}/.ssh/id_rsa.pub"
+#ocp_configs
+ocpuser: ocpsa
+  # Add more nodes as needed
+  # - hostname: master02.lab.example.com
+  #   role: master
+  #   ip: 192.168.10.51
+  #   nic: eth0
+
+  # - hostname: worker01.lab.example.com
+  #   role: worker
+  #   ip: 192.168.10.60
+  #   nic: eth0
+#more ip stuff.
+rendezvous_ip: 192.168.10.50
+#pull secret - I do not define offline_access_token here -> moved to generate_pull_secrets since it's using .env
+#offline_access_token: "{{ lookup('env', 'OFFLINE_ACCESS_TOKEN') }}"
+pull_secret_dir: "{{ ocp_workdir }}/pull-secret"
+
+#for template
+cluster_name: example-cluster
+cluster_base_domain: lab.example.com
+pull_secret_file: /home/ocpsa/pull-secret.json
+ssh_pub_key_file: /home/ocpsa/.ssh/id_rsa.pub
+install_platform: baremetal
+
+
+# RHCOS URLs for OpenShift 4.18
+rhcos_live_iso_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.18/latest/rhcos-4.18.1-x86_64-live.x86_64.iso"
+
+# Baremetal VIPs
+api_vip: 192.168.10.5
+ingress_vip: 192.168.10.6
+
+# Baremetal hosts
+baremetal_hosts:
+  - name: sno01
+    role: master
+    bmc_address: ipmi://192.168.10.100
+    bmc_username: admin
+    bmc_password: password
+    mac_address: 00:11:22:33:44:55
+    boot_mode: UEFI
+    root_device: /dev/sda
+ocp_bridge: virbr1
+
+
+# Machine network CIDR matching your OCP network pool
+ocp_machine_network_cidr: 192.168.10.0/24
+
+
+dnsmasq:
+  upstream_dns: "8.8.8.8"  # Google's DNS or any other external DNS
+  local_domain: "lab.example.com"
+  local_dns_server: "127.0.0.1"

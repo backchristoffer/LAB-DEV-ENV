@@ -1,0 +1,32 @@
+---
+- name: Pre-create working directories as root for ocpsa use
+  ansible.builtin.file:
+    path: "{{ ocp_workdir }}/{{ item }}"
+    state: directory
+    owner: ocpsa
+    group: ocpsa
+    mode: '0775'
+  loop:
+    - ""
+    - install
+    - agent
+    - ignition
+    - pull-secret
+
+- name: Ensure OpenShift working directory exists
+  ansible.builtin.file:
+    path: "{{ ocp_workdir }}"
+    state: directory
+    mode: '0755'
+  ignore_errors: true
+
+- name: Create subdirectories for cluster assets
+  ansible.builtin.file:
+    path: "{{ ocp_workdir }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - install
+    - agent
+    - ignition
+    - pull-secret

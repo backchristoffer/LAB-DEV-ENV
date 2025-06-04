@@ -1,0 +1,9 @@
+# /etc/dnsmasq.conf
+bind-interfaces
+domain-needed
+bogus-priv
+no-resolv
+listen-address=127.0.0.1
+conf-dir=/etc/dnsmasq.d,.rpmnew,.rpmsave,.rpmorig
+server={{ dnsmasq.upstream_dns }}
+server=/{{ dnsmasq.local_domain }}/{{ dnsmasq.local_dns_server }}
