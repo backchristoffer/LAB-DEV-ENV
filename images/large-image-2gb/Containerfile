@@ -1,6 +1,24 @@
 FROM python:3.12-alpine
 RUN mkdir -p /data && dd if=/dev/zero of=/data/bigfile bs=1M count=4096 
 RUN apk add --no-cache busybox-static
+RUN apk add --no-cache git
+RUN apk add --no-cache vim
+RUN apk add --no-cache build-base
+RUN apk add --no-cache postgresql-dev
+RUN apk add --no-cache wget
+RUN apk add --no-cache grep
+RUN apk add --no-cache tar
+RUN apk add --no-cache zip
+RUN apk add --no-cache unzip
+RUN apk add --no-cache nano
+RUN apk add --no-cache curl
+RUN apk add --no-cache gcc
+RUN apk add --no-cache g++
+RUN apk add --no-cache make
+RUN apk add --no-cache cmake
+RUN apk add --no-cache python3-dev
+RUN apk add --no-cache openssl-dev
+RUN apk add --no-cache sqlite-dev
 RUN mkdir -p /www && echo "Large image test - Index" > /www/index.html && chown -R 1000:1000 /www
 EXPOSE 8080
 RUN adduser -D -u 1000 appuser
