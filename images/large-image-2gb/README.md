@@ -1,2 +1,2 @@
 ### How-to
-* oc process -f large-image-template.yaml -p NAMESPACE=large-image-test-ns | oc apply -f -
+* oc process --local -f deploy-laimage.yaml -p NAMESPACE=large-image-test-ns1 | oc apply -f -
