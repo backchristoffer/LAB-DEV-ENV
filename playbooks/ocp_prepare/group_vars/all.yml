@@ -18,6 +18,8 @@ ocpuser: ocpsa
   #   role: worker
   #   ip: 192.168.10.60
   #   nic: eth0
+
+  
 #more ip stuff.
 rendezvous_ip: 192.168.10.50
 #pull secret - I do not define offline_access_token here -> moved to generate_pull_secrets since it's using .env
@@ -57,6 +59,6 @@ ocp_machine_network_cidr: 192.168.10.0/24
 
 
 dnsmasq:
-  upstream_dns: "8.8.8.8"  # Google's DNS or any other external DNS
+  upstream_dns: "8.8.8.8"
   local_domain: "lab.example.com"
   local_dns_server: "127.0.0.1"

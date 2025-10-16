@@ -2,6 +2,9 @@
 
 Lab Dev Env is a collection of Ansible playbooks designed to automate the setup of development environments for various operating systems including Linux, Windows, and macOS. These playbooks are intended to streamline the process of setting up development environments for labs and personal use. This is a work in progress and I will add more environments for various systems in the future.
 
+Some playbooks or scripts will require a API offline token to run.
+Please visit https://access.redhat.com/management/api for more information
+
 ## Blueprints
 
 ### RHEl 9.4 LAB Image
