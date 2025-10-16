@@ -23,7 +23,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: large-image-test-app
-        image: ghcr.io/backchristoffer/lab-dev-env/large-image-test:0.2
+        image: ghcr.io/backchristoffer/lab-dev-env/large-image-tes:latest
         ports:
         - containerPort: 8080
         securityContext:
