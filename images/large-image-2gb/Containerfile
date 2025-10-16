@@ -1,8 +1,8 @@
 FROM alpine
 RUN mkdir -p /data && dd if=/dev/zero of=/data/bigfile bs=1M count=2048 
-RUN apk add --no-cache busybox-extras
+RUN apk add --no-cache busybox-static
 RUN mkdir -p /www && echo "Large image test - Index" > /www/index.html
 EXPOSE 8080
 RUN adduser -D appuser
 USER appuser
-CMD ["busybox", "httpd", "-f", "-p", "8080", "-h", "/www"]
+CMD ["/bin/busybox.static", "httpd", "-f", "-p", "8080", "-h", "/www"]
