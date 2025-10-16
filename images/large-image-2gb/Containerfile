@@ -1,5 +1,5 @@
 FROM python:3.12-alpine
-RUN mkdir -p /data && dd if=/dev/zero of=/data/bigfile bs=1M count=2048 
+RUN mkdir -p /data && dd if=/dev/zero of=/data/bigfile bs=1M count=4096 
 RUN apk add --no-cache busybox-static
 RUN mkdir -p /www && echo "Large image test - Index" > /www/index.html && chown -R 1000:1000 /www
 EXPOSE 8080
