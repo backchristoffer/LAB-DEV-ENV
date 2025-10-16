@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: large-image-test-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: large-image-test-app
+  namespace: large-image-test-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: large-image-test-app
+  template:
+    metadata:
+      labels:
+        app: large-image-test-app
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+      - name: large-image-test-app
+        image: ghcr.io/backchristoffer/lab-dev-env/large-image-test:0.2
+        ports:
+        - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: large-image-test-app
+  namespace: large-image-test-ns
+spec:
+  selector:
+    app: large-image-test-app
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: large-image-test-app
+  namespace: large-image-test-ns
+spec:
+  to:
+    kind: Service
+    name: large-image-test-app
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
