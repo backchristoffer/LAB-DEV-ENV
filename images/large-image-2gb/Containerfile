@@ -1,5 +1,5 @@
 FROM python:3.12-alpine
-RUN mkdir -p /data && dd if=/dev/zero of=/data/bigfile bs=1M count=2048 
+RUN mkdir -p /data && dd if=/dev/zero of=/data/bigfile bs=1M count=1024 
 RUN apk add --no-cache busybox-static
 RUN apk add --no-cache git
 RUN apk add --no-cache vim
